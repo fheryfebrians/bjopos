@@ -43,16 +43,18 @@ class LaporanController extends Controller
 
             // new 
             // $harga_beli = Penjualan::where('created_at', 'LIKE', "%$tanggal%")->sum('modal_product');
-            $harga_beli = DB::table('penjualan')
+            $beli = DB::table('penjualan')
                                 ->join('penjualan_detail', 'penjualan_detail.id_penjualan', '=', 'penjualan.id_penjualan')
                                 ->join('goods_master', 'goods_master.id', '=', 'penjualan_detail.id_produk')
                                 ->join('modal', 'modal.id', '=', 'goods_master.id_modal')
                                 ->where('penjualan.created_at', 'LIKE', "%$tanggal%")
                                 ->sum('modal.modal_product');
    
-            $total_penjualan = Penjualan::where('created_at', 'LIKE', "%$tanggal%")->sum('bayar');
+            $penjualan = Penjualan::where('created_at', 'LIKE', "%$tanggal%");
+            $item = $penjualan->sum('total_item');
 
-            
+            $harga_beli = $beli * $item;
+            $total_penjualan = $penjualan->sum('bayar');
             $pendapatan = $total_penjualan; 
             $laba_kotor =  $pendapatan - $harga_beli;
             
